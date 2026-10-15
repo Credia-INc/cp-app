@@ -1483,7 +1483,7 @@ function toggleSpeaker(){
 
 // Full voice map for all 20 supported languages
 const CALL_VOICES = {
-  en:'en-US-GuyNeural',     fr:'fr-CA-JeanNeural',    es:'es-MX-JorgeNeural',
+  en:'en-US-GuyNeural',     fr:'fr-FR-DeniseNeural',    es:'es-MX-JorgeNeural',
   de:'de-DE-ConradNeural',  ja:'ja-JP-KeitaNeural',   'zh-Hans':'zh-CN-YunxiNeural',
   pt:'pt-BR-AntonioNeural', ar:'ar-SA-HamedNeural',   ru:'ru-RU-DmitryNeural',
   hi:'hi-IN-MadhurNeural',  ko:'ko-KR-InJoonNeural',  it:'it-IT-DiegoNeural',
@@ -1612,7 +1612,7 @@ function selectLang(flag,name){
 // en une seule passe (multi-cibles) — la brique du futur mode événement.
 const CONF_TARGETS = ['English','French','Spanish','Russian','Chinese','Arabic','Haitian Creole'];
 const CONF_LABEL = {en:'EN', fr:'FR', es:'ES', ru:'RU', 'zh-Hans':'ZH', ar:'AR', ht:'HT'};
-const CONF_VOICES = {en:'en-US-GuyNeural', fr:'fr-CA-JeanNeural', es:'es-MX-JorgeNeural', ru:'ru-RU-DmitryNeural', 'zh-Hans':'zh-CN-YunxiNeural', ar:'ar-SA-HamedNeural', ht:'fr-CA-JeanNeural'};
+const CONF_VOICES = {en:'en-US-GuyNeural', fr:'fr-FR-DeniseNeural', es:'es-MX-JorgeNeural', ru:'ru-RU-DmitryNeural', 'zh-Hans':'zh-CN-YunxiNeural', ar:'ar-SA-HamedNeural', ht:'fr-FR-DeniseNeural'};
 let confLang = {name:'English', flag:'🇺🇸'};
 
 function explainHtLimit(){
@@ -3666,5 +3666,24 @@ function applyReportEdit(){
   </div>
 </div>
 
+
+<!-- ===== Loquivox production hardening (re-applied — KEEP THIS BLOCK; git pull before editing index.html) ===== -->
+<script>
+(function(){
+  try{ if(typeof CALL_VOICES!=="undefined") CALL_VOICES.fr="fr-FR-DeniseNeural"; }catch(e){}
+  try{ if(typeof CONF_VOICES!=="undefined"){ CONF_VOICES.fr="fr-FR-DeniseNeural"; if(!CONF_VOICES.pt) CONF_VOICES.pt="pt-BR-AntonioNeural"; } }catch(e){}
+  function _lqUnlock(){
+    try{
+      var c=(typeof getRCAudioCtx==="function")?getRCAudioCtx():null;
+      if(c){ var bf=c.createBuffer(1,1,22050); var s=c.createBufferSource(); s.buffer=bf; s.connect(c.destination); s.start(0); if(c.state==="suspended") c.resume(); }
+      if(window._getRemoteAudioCtx){ var c2=window._getRemoteAudioCtx(); if(c2&&c2.state==="suspended") c2.resume(); }
+    }catch(e){}
+    document.removeEventListener("touchend",_lqUnlock,true);
+    document.removeEventListener("click",_lqUnlock,true);
+  }
+  document.addEventListener("touchend",_lqUnlock,true);
+  document.addEventListener("click",_lqUnlock,true);
+})();
+</script>
 </body>
 </html>
