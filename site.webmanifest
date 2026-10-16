@@ -1,31 +1,56 @@
 {
-  "name": "Loquivox — Real-Time AI Translator",
+  "name": "Loquivox – Real-Time AI Translator",
   "short_name": "Loquivox",
   "description": "Real-time AI voice translation for live calls and meetings. Supports 20+ languages.",
-  "id": "/",
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#0d1117",
   "theme_color": "#4f8ef7",
   "lang": "en",
   "scope": "/",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "screenshots": [
-    { "src": "/screenshots/1-home.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Home" },
-    { "src": "/screenshots/2-two-way.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Two-Way translation" },
-    { "src": "/screenshots/3-conference.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Conference" },
-    { "src": "/screenshots/4-remote-qr.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Remote Call QR" },
-    { "src": "/screenshots/5-kreyol.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Haitian Creole" }
+    {
+      "src": "/screenshot-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Loquivox home screen — choose your translation mode"
+    },
+    {
+      "src": "/screenshot-call.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Two-Way Call — real-time voice translation between two speakers"
+    }
   ],
   "categories": ["productivity", "utilities"],
-  "related_applications": [
-    { "platform": "play", "id": "ca.credia.translate", "url": "https://play.google.com/store/apps/details?id=ca.credia.translate" }
-  ],
   "prefer_related_applications": false
 }

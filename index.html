@@ -890,8 +890,12 @@ function getMock(langA, langB){
 // ── Jetons Azure éphémères fournis par le serveur CP ──────────
 // (la clé Azure reste sur le serveur ; le client ne la voit jamais)
 const CP_TOKEN_URL = 'https://cp-app-rho.vercel.app/api/token';
-// Silently wake the server on load so it's ready when users speak
+const CP_REMOTE_SERVER = 'https://cp-server-kdbg.onrender.com';
+// Silently wake both servers on load so they're ready when users speak
 fetch(CP_TOKEN_URL, { method: 'HEAD' }).catch(() => {});
+fetch(CP_REMOTE_SERVER + '/health').catch(() => {});
+// Keep-alive ping every 4 minutes to prevent Render cold starts
+setInterval(() => fetch(CP_REMOTE_SERVER + '/health').catch(() => {}), 4 * 60 * 1000);
 
 async function getCpToken(){
   // Fast path — server already awake
@@ -1489,7 +1493,7 @@ const CALL_VOICES = {
   hi:'hi-IN-MadhurNeural',  ko:'ko-KR-InJoonNeural',  it:'it-IT-DiegoNeural',
   nl:'nl-NL-MaartenNeural', pl:'pl-PL-MarekNeural',   sv:'sv-SE-MattiasNeural',
   tr:'tr-TR-AhmetNeural',   el:'el-GR-NestorasNeural',vi:'vi-VN-NamMinhNeural',
-  sw:'sw-KE-RafikiNeural',
+  sw:'sw-KE-RafikiNeural', ht:'fr-CA-JeanNeural',
 };
 
 // Speak the translated text via REST API + pre-unlocked AudioContext (cross-browser reliable)
@@ -1497,21 +1501,6 @@ const CALL_VOICES = {
 async function speakCallTTS(text, langCode, creds, onDone) {
   if (!callTtsEnabled || !text) { if(onDone) onDone(); return; }
   const ctx = getRCAudioCtx();
-
-  if (langCode === 'ht') {
-    try {
-      const r = await fetch('https://cp-app-rho.vercel.app/api/ht-tts?text=' + encodeURIComponent(text));
-      if (!r.ok) { if(onDone) onDone(); return; }
-      const buf = await r.arrayBuffer();
-      const decoded = await ctx.decodeAudioData(buf.slice(0));
-      const src = ctx.createBufferSource();
-      src.buffer = decoded;
-      src.connect(ctx.destination);
-      src.onended = () => { if(onDone) onDone(); };
-      src.start(0);
-    } catch(e) { if(onDone) onDone(); }
-    return;
-  }
 
   try {
     const voice = CALL_VOICES[langCode] || 'en-US-GuyNeural';

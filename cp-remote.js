@@ -315,8 +315,7 @@
     nl: 'nl-NL-MaartenNeural',  pl: 'pl-PL-MarekNeural',
     sv: 'sv-SE-MattiasNeural',  tr: 'tr-TR-AhmetNeural',
     sw: 'sw-KE-RafikiNeural',   el: 'el-GR-NestorasNeural',
-    vi: 'vi-VN-NamMinhNeural',
-    // ht intentionally omitted — routed to ElevenLabs below
+    vi: 'vi-VN-NamMinhNeural',  ht: 'fr-CA-JeanNeural',
   };
 
   function speakTranslation(m) {
@@ -328,18 +327,6 @@
     state.ttsQueue = state.ttsQueue.then(() => new Promise(async (resolve) => {
       try {
         const ctx = getAudioCtx(); // always use pre-unlocked AudioContext
-        if (state.myLang === 'ht') {
-          // Haitian Creole → ElevenLabs multilingual_v2 via proxy (Azure doesn't support ht TTS)
-          const r = await fetch(HT_TTS_URL + '?text=' + encodeURIComponent(text));
-          if (!r.ok) { resolve(); return; }
-          const buf = await r.arrayBuffer();
-          const decoded = await ctx.decodeAudioData(buf.slice(0));
-          const src = ctx.createBufferSource();
-          src.buffer = decoded;
-          src.connect(ctx.destination);
-          src.onended = resolve;
-          src.start(0);
-        } else {
           // Azure TTS REST API — bypass SDK's internal AudioContext (which starts suspended)
           const creds = await getAzureToken();
           const voice = TTS_VOICES[state.myLang] || 'en-US-GuyNeural';
@@ -363,7 +350,6 @@
           src.connect(ctx.destination);
           src.onended = resolve;
           src.start(0);
-        }
       } catch (err) {
         console.warn('[CPRemote] TTS error:', err);
         resolve();
