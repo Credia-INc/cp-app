@@ -7,21 +7,28 @@ export default async function handler(req, res) {
   const text = req.query.text;
   if (!text) { res.status(400).json({ error: 'text required' }); return; }
 
-  const VOICE_ID = 'pNInz6obpgDQGcFmaJgB';
-  const API_KEY = process.env.ELEVENLABS_API_KEY;
-  if (!API_KEY) { res.status(500).json({ error: 'API key not configured' }); return; }
-
   try {
-    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+    const cpHeaders = { 'Content-Type': 'application/json' };
+    if (process.env.CP_APP_KEY) cpHeaders['X-CP-App-Key'] = process.env.CP_APP_KEY;
+    const tokenRes = await fetch('https://cp-server-kdbg.onrender.com/api/token', { headers: cpHeaders });
+    if (!tokenRes.ok) { res.status(502).json({ error: 'token fetch failed' }); return; }
+    const { token, region } = await tokenRes.json();
+
+    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const ssml = "<speak version='1.0' xml:lang='fr-CA'><voice name='fr-CA-JeanNeural'>" + escaped + "</voice></speak>";
+
+    const r = await fetch("https://" + region + ".tts.speech.microsoft.com/cognitiveservices/v1", {
       method: 'POST',
-      headers: { 'xi-api-key': API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-      })
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/ssml+xml',
+        'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
+        'User-Agent': 'Loquivox',
+      },
+      body: ssml,
     });
-    if (!r.ok) { res.status(r.status).json({ error: 'ElevenLabs error' }); return; }
+
+    if (!r.ok) { res.status(r.status).json({ error: 'Azure TTS error' }); return; }
     const buf = await r.arrayBuffer();
     res.setHeader('Content-Type', 'audio/mpeg');
     res.send(Buffer.from(buf));
