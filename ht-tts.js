@@ -8,8 +8,10 @@ export default async function handler(req, res) {
   if (!text) { res.status(400).json({ error: 'text required' }); return; }
 
   try {
-    // Get Azure token from CP server
-    const tokenRes = await fetch('https://cp-server-kdbg.onrender.com/api/token');
+    // Get Azure token from CP server (send app key for Layer 2 auth)
+    const cpHeaders = { 'Content-Type': 'application/json' };
+    if (process.env.CP_APP_KEY) cpHeaders['X-CP-App-Key'] = process.env.CP_APP_KEY;
+    const tokenRes = await fetch('https://cp-server-kdbg.onrender.com/api/token', { headers: cpHeaders });
     if (!tokenRes.ok) { res.status(502).json({ error: 'token fetch failed' }); return; }
     const { token, region } = await tokenRes.json();
 
