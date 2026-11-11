@@ -6,7 +6,10 @@ export default async function handler(req, res) {
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 55000);
-    const r = await fetch('https://cp-server-kdbg.onrender.com/api/token', { signal: ctrl.signal });
+    const r = await fetch('https://cp-server-kdbg.onrender.com/api/token', {
+      signal: ctrl.signal,
+      headers: { 'X-CP-App-Key': process.env.CP_APP_KEY || '' }
+    });
     clearTimeout(tid);
     if (!r.ok) { res.status(r.status).json({ error: 'upstream error' }); return; }
     const data = await r.json();
